@@ -1,5 +1,5 @@
-# C++ Group Projects 2022/23
-## Question 1
+# C++ OOP Group Project 2022/23
+## Question
 Assume that a bank maintains two kinds of accounts for customers,
 One called as savings account and the other as current account. The
 savings account provides compound interest and withdrawal facilities
