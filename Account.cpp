@@ -1,202 +1,236 @@
 #include <iostream>
 #include <cstring>
-#include<cctype>
-#include<conio.h>
+#include <cctype>
+#include <conio.h>
 using namespace std;
 
-const double sav_minbalance=5000;
-const double curr_minbalance=1000;
-const double interestRate=0.05;
+const double sav_minbalance = 5000;
+const double curr_minbalance = 1000;
+const double interestRate = 0.05;
 
 class Account {
-	protected:
+protected:
     string depositorName;
     string accountType;
     long accountNumber;
-    double balance=0;
+    double balance = 0;
+
 public:
-    //constructor
+    // constructor
     Account(const string& name, long accNumber, double balance)
     {
         depositorName = name;
-        this ->accountNumber = accNumber;
-        this ->balance=balance;
+        this->accountNumber = accNumber;
+        this->balance = balance;
     }
-    //accept deposit
+
+    // accept deposit
     void deposit()
     {
         double amount;
-        cout<<"Enter amount to deposit: "<<endl;
-        cin>>amount;
-        balance +=amount;
-        cout<<"You successfully deposited $ "<<amount<<endl;
+        cout << "Enter amount to deposit: " << endl;
+        cin >> amount;
+        balance += amount;
+        cout << "You successfully deposited $ " << amount << endl;
     }
-       //account details
+
+    // account details
     void display()
     {
-        cout<<"=================== Account Details ======================="<<endl;
-        cout<<"Holder's Name: "<<depositorName<<endl;
-        cout<<"Account No: "<<accountNumber<<endl;
-        cout<<"Balance: $ "<<balance<<endl;
+        cout << "=================== Account Details =======================" << endl;
+        cout << "Holder's Name: " << depositorName << endl;
+        cout << "Account No: " << accountNumber << endl;
+        cout << "Balance: $ " << balance << endl;
     }
-    //permit withdrawal and update balance
+
+    // permit withdrawal and update balance
     void permitWithdraw()
     {
         int n;
-        cout<<"Enter 1 to confirm or 2 to cancel."<<endl;
-        cin>>n;
-        if(n==1)
+        cout << "Enter 1 to confirm or 2 to cancel." << endl;
+        cin >> n;
+        if (n == 1)
         {
-            cout<<"Transaction has been successful"<<endl<<endl;
-        }else if(n==2)
-        {
-            cout<<"Transaction cancelled."<<endl;
-        }else
-        {
-        cout<<"Wrong entry try again."<<endl;
+            cout << "Transaction has been successful" << endl << endl;
         }
-    }
-    //Check minimum balance, impose penalty and update balance
-    void penalty()
-    {
-        if(balance < sav_minbalance)
+        else if (n == 2)
         {
-            double penalty=balance*0.1;
-            balance -=penalty;
-            cout<<"A fine of $ "<<penalty<<" has been imposed on your account."<<endl;
-        }else if(balance < curr_minbalance)
+            cout << "Transaction cancelled." << endl;
+        }
+        else
         {
-            double penalty=balance*0.05;
-            balance -=penalty;
-            cout<<"A fine of $ "<<penalty<<" has been imposed on your account."<<endl;
-        }else
-        {
-        	cout<<"You have $ "<<balance<<" in your account. Thanks"<<endl;
-		}
+            cout << "Wrong entry try again." << endl;
+        }
     }
 
-};
-class Curr_Account: public Account
-{
-public:
-	Curr_Account(const string& name, long accNumber, double balance): Account(name, accNumber, balance){}
-         //withdraw
-    void withdraw()
+    // check minimum balance, impose penalty and update balance
+    void penalty()
     {
-        double amount;
-        cout<<"Enter amount to withdraw: ";
-        cin>>amount;
-        if(((balance - amount) > 0) && (balance > curr_minbalance))
+        if (balance < sav_minbalance)
         {
-        	balance -=amount;
-        	permitWithdraw();
-        }else
+            double penalty = balance * 0.1;
+            balance -= penalty;
+            cout << "A fine of $ " << penalty << " has been imposed on your account." << endl;
+        }
+        else if (balance < curr_minbalance)
         {
-            cout<<"Insufficent balance"<<endl;
+            double penalty = balance * 0.05;
+            balance -= penalty;
+            cout << "A fine of $ " << penalty << " has been imposed on your account." << endl;
+        }
+        else
+        {
+            cout << "You have $ " << balance << " in your account. Thanks" << endl;
         }
     }
 };
-class Sav_Account: public Account
+
+class Curr_Account : public Account
 {
 public:
-	Sav_Account(const string& name, long accNumber, double balance): Account(name, accNumber, balance){}
-         //withdraw
+    Curr_Account(const string& name, long accNumber, double balance) : Account(name, accNumber, balance) {}
+
+    // withdraw
     void withdraw()
     {
         double amount;
-        cout<<"Enter amount to withdraw: ";
-        cin>>amount;
-        if(((balance - amount) > 0) && (balance > sav_minbalance))
+        cout << "Enter amount to withdraw: ";
+        cin >> amount;
+        if (((balance - amount) > 0) && (balance > curr_minbalance))
         {
-        	balance -=amount;
-        	permitWithdraw();
-        }else
+            balance -= amount;
+            permitWithdraw();
+        }
+        else
         {
-            cout<<"Insufficent balance"<<endl<<endl;
+            cout << "Insufficient balance" << endl;
         }
     }
-     //interest computation
+};
+
+class Sav_Account : public Account
+{
+public:
+    Sav_Account(const string& name, long accNumber, double balance) : Account(name, accNumber, balance) {}
+
+    // withdraw
+    void withdraw()
+    {
+        double amount;
+        cout << "Enter amount to withdraw: ";
+        cin >> amount;
+        if (((balance - amount) > 0) && (balance > sav_minbalance))
+        {
+            balance -= amount;
+            permitWithdraw();
+        }
+        else
+        {
+            cout << "Insufficient balance" << endl << endl;
+        }
+    }
+
+    // interest computation
     void compInterest()
     {
         int t;
         double interest;
-        cout<<"Enter the number of years: ";
-        cin>>t;
-        interest = balance*interestRate*t;
-        balance +=interest;
-        cout<<"Interest of $ "<<interest<<" has been added to your account"<<endl;
+        cout << "Enter the number of years: ";
+        cin >> t;
+        interest = balance * interestRate * t;
+        balance += interest;
+        cout << "Interest of $ " << interest << " has been added to your account" << endl;
     }
 };
 
-
 int main() {
-    Curr_Account c("John",253534,60000.0);
-    Sav_Account s("Doe",7357634,80000.0);
+    const int maxCustomers = 100;
+    Account* accounts[maxCustomers];
+    int numCustomers = 0;
+
+    Curr_Account c("John", 253534, 60000.0);
+    Sav_Account s("Doe", 7357634, 80000.0);
+
+    accounts[numCustomers++] = &c;
+    accounts[numCustomers++] = &s;
+
     do
     {
         int option1;
-    cout<<"=================== WELCOME TO DFCU BANK ========================"<<endl;
-    cout<<endl;
-    cout<<"Select Account Type. "<<endl;
-    cout<<"1. Saving Account "<<endl;
-    cout<<"2. Current Account "<<endl;
-    cout<<endl;
-    cin>>option1;
-    switch(option1)
-    {
+        cout << "=================== WELCOME TO DFCU BANK ========================" << endl;
+        cout << endl;
+        cout << "Select Account Type. " << endl;
+        cout << "1. Saving Account " << endl;
+        cout << "2. Current Account " << endl;
+        cout << endl;
+        cin >> option1;
+
+        switch (option1)
+        {
         case 1:
+            int options;
+            cout << "=========== SAVING ACCOUNT ===============" << endl;
+            cout << "1. Withdraw " << endl;
+            cout << "2. Compute Interest " << endl;
+            cout << "3. Check Balance " << endl;
+            cout << "4. Account Details " << endl;
+            cout << "5. Exit program";
+            cout << endl;
+            cout << "Choose an option? " << endl;
+            cin >> options;
 
-             int options;
-    cout<<"=========== SAVING ACCOUNT ==============="<<endl;
-    cout<<"1. Withdraw "<<endl;
-    cout<<"2. Compute Interest "<<endl;
-    cout<<"3. Check Balance "<<endl;
-    cout<<"4. Account Details "<<endl;
-    cout<<"5. Exit program" ;
-    cout<<endl;
-    cout<<"Choose an option? "<<endl;
-    cin>>options;
-    switch(options)
-    {
-        case 1: s.withdraw();
-        break;
-        case 2: s.compInterest();
-        break;
-        case 3: s.penalty();
-        break;
-        case 4: s.display();
-        break;
-        case 5: main();
-        break;
-        
-        default: cout<<"Wrong choice. Try again"<<endl;
-    }
+            switch (options)
+            {
+            case 1:
+                s.withdraw();
+                break;
+            case 2:
+                s.compInterest();
+                break;
+            case 3:
+                s.penalty();
+                break;
+            case 4:
+                s.display();
+                break;
+            case 5:
+                return 0;
+            default:
+                cout << "Wrong choice. Try again" << endl;
+            }
+            break;
+
         case 2:
-             int optionc;
-    cout<<"================ CURRENT ACCOUNT ================"<<endl;
-    cout<<"1. Withdraw "<<endl;
-    cout<<"2. Check Balance "<<endl;
-    cout<<"3. Account Details "<<endl;
-    cout<<"4. Exit Program ";
-    cout<<endl;
-    cout<<"Choose an option? "<<endl;
-    cin>>optionc;
-    switch(optionc)
-    {
-        case 1: c.withdraw();
-        break;
-        case 2: c.penalty() ;
-        break;
-        case 3: c.display();
-        break;
-        case 4: main();
-        break;
-        default: cout<<"Wrong choice. Try again"<<endl;
-    }
+            int optionc;
+            cout << "================ CURRENT ACCOUNT ================" << endl;
+            cout << "1. Withdraw " << endl;
+            cout << "2. Check Balance " << endl;
+            cout << "3. Account Details " << endl;
+            cout << "4. Exit Program ";
+            cout << endl;
+            cout << "Choose an option? " << endl;
+            cin >> optionc;
 
-    }
-	}while(1);
+            switch (optionc)
+            {
+            case 1:
+                c.withdraw();
+                break;
+            case 2:
+                c.penalty();
+                break;
+            case 3:
+                c.display();
+                break;
+            case 4:
+                return 0;
+            default:
+                cout << "Wrong choice. Try again" << endl;
+            }
 
+            break;
+        }
+    } while (1);
 
     return 0;
 }
